@@ -7,7 +7,8 @@ import com.jogamp.opengl.util.*;
 import ch.fhnw.util.math.*;
 
 public class Wurfparabel
-       implements WindowListener, GLEventListener
+       implements WindowListener, GLEventListener,
+       KeyListener
 {
 
     //  ---------  globale Daten  ---------------------------
@@ -46,6 +47,8 @@ public class Wurfparabel
     double ax = 0;
     double dt = 0.01;		// Zeitschritt (delta t)
 
+    //#KeyEvents (awt)
+    boolean stopped = false;
 
     //  ---------  Methoden  ----------------------------------
 
@@ -64,6 +67,8 @@ public class Wurfparabel
        canvas.addGLEventListener(this);
        f.add(canvas);
        f.setVisible(true);
+     //#KeyEvents (awt)
+       f.addKeyListener(this);
     };
 
     /**
@@ -131,6 +136,9 @@ public class Wurfparabel
 //      drehwinkel += 30;							//drehwinkel verändern
 //      mygl.setM(gl, M);
       
+      //#KeyEvents (awt)
+      if(stopped) return;
+      //#Wurfparabel
       	zeichneKreis(gl, 1, (float) x, (float) y, 20);
       	//#Wurfparabel
       	// Y-Achse
@@ -181,6 +189,21 @@ public class Wurfparabel
     }
 
     //  ---------  Window-Events  --------------------
+    
+    //#KeyEvents (awt)
+    public void keyPressed(KeyEvent e) {
+    	//für Kontrolltasten
+    }
+    public void keyReleased(KeyEvent e) {
+    	
+    }
+	public void keyTyped(KeyEvent e) {
+    	//mit Shift; für charaktertasten
+		char code = e.getKeyChar();
+		if (code == 's' || code == 'S') {
+			stopped = !stopped;
+		}
+    }
 
     public void windowClosing(WindowEvent e)
     {   System.out.println("closing window");
