@@ -7,7 +7,7 @@ import com.jogamp.opengl.util.*;
 import ch.fhnw.util.math.*;
 
 public class Lissajous
-       implements WindowListener, GLEventListener
+       implements WindowListener, GLEventListener, KeyListener
 {
 
     //  ---------  globale Daten  ---------------------------
@@ -32,6 +32,7 @@ public class Lissajous
     double _B = _A;		//Amplitude
     double phi = 0;		//Rotationswinkel in Grad (3D - Effekt)
     					//0° => direkt von oben betrachtend dargestellt.
+    boolean rotate = true;	//press 's' to soggle rotation.
 
     //  ---------  Methoden  ----------------------------------
 
@@ -50,6 +51,9 @@ public class Lissajous
        canvas.addGLEventListener(this);
        f.add(canvas);
        f.setVisible(true);
+       //#AddListener
+       f.addKeyListener(this);
+       canvas.addKeyListener(this);
     };
 
 
@@ -70,7 +74,9 @@ public class Lissajous
 			mygl.putVertex(x, y, 0f);
 			
 		}
-		phi += 0.2;
+		if (rotate) {
+			phi += 0.2;
+		}
 		
 		mygl.copyBuffer(gl);
 		mygl.drawArrays(gl,GL3.GL_LINE_LOOP);
@@ -170,5 +176,15 @@ public class Lissajous
     public void windowDeiconified(WindowEvent e) {  }
     public void windowIconified(WindowEvent e) {  }
     public void windowOpened(WindowEvent e) {  }
+    
+    public void keyPressed(KeyEvent e) { }
+
+    public void keyReleased(KeyEvent e) { }
+    
+    public void keyTyped(KeyEvent e)
+    { char code = e.getKeyChar();
+      if (code == 's')
+        rotate = !rotate;
+    }
 
 }
