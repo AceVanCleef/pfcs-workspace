@@ -70,7 +70,7 @@ public class Lissajous
 			mygl.putVertex(x, y, 0f);
 			
 		}
-		//phi += 0.2;
+		phi += 0.2;
 		
 		mygl.copyBuffer(gl);
 		mygl.drawArrays(gl,GL3.GL_LINE_LOOP);
