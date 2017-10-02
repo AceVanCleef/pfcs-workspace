@@ -27,7 +27,7 @@ public class Lissajous
     //#Lissajous
     //Formel:	x = A * sin(at + phi), y = B * sin (bt) @wikipedia
     double a = 1;		//Kreisfrequenz
-    double b = 2;		//Kreisfrequenz
+    double b = 1;		//Kreisfrequenz
     double _A = 1;		//Amplitude
     double _B = _A;		//Amplitude
     double phi = 0;		//Rotationswinkel in Grad (3D - Effekt)
@@ -65,9 +65,8 @@ public class Lissajous
 		int n = 100;	//Punkte
 		double dt = (2 * Math.PI) / (w1 * n);
 		for (int i = 0; i < n + 1; ++i){
-			dt = (2 * Math.PI) / (w1 * i);
-			float x = (float) calcLissX(a1, w1, dt);
-			float y = (float) calcLissY(a2, w2, dt, phi);
+			float x = (float) calcLissX(i, a1, w1, dt);
+			float y = (float) calcLissY(i, a2, w2, dt, phi);
 			mygl.putVertex(x, y, 0f);
 			
 		}
@@ -78,13 +77,30 @@ public class Lissajous
 	}
     
     //#Lissajous
-    private double calcLissX(double a, double w, double t){
-    	return a * Math.cos(w * t);
+    /**
+     * berechnet die x-Koordinate des k-ten Punktes einer Lissajouskurve.
+     * @param a	- Amplitude
+     * @param w	- Kreisfrequenz
+     * @param k	- k-ter Punkt
+     * @param t	- Zeit (time)
+     * @return	-	x-Koordinate des k-ten Punktes.
+     */
+    private double calcLissX(int k, double a, double w, double t){
+    	return a * Math.cos(w * k * t);
     }
 
     //#Lissajous
-    private double calcLissY(double a, double w, double t, double phi){
-    	return a * Math.sin(w * t - phi);
+    /**
+     * berechnet die y-Koordinate des k-ten Punktes einer Lissajouskurve.
+     * @param a	- Amplitude
+     * @param w	- Kreisfrequenz
+     * @param k	- k-ter Punkt
+     * @param t	- Zeit (time)
+     * @param phi	-	Rotationsfaktor
+     * @return	-	y-Koordinate des k-ten Punktes.
+     */
+    private double calcLissY(int k, double a, double w, double t, double phi){
+    	return a * Math.sin(w * k * t - phi);
     }
 
     //  ----------  OpenGL-Events   ---------------------------
