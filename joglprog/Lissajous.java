@@ -32,7 +32,7 @@ public class Lissajous
     double _B = _A;		//Amplitude
     double phi = 0;		//Rotationswinkel in Grad (3D - Effekt)
     					//0° => direkt von oben betrachtend dargestellt.
-    boolean rotate = true;	//press 's' to soggle rotation.
+    boolean rotate = true;	//press 's' to soggle rotation. 
 
     //  ---------  Methoden  ----------------------------------
 
