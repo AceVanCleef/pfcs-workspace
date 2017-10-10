@@ -33,6 +33,9 @@ boolean stopped = false;
 
 Wurfgeschoss speer;
 Fallobjekt blech;
+Kanone kanone;
+
+boolean readyToShoot = true;
 
 
 //  ---------  Methoden  ----------------------------------
@@ -84,7 +87,8 @@ public void init(GLAutoDrawable drawable)             //  Initialisierung
 	 double ay = -g;
 	 double dt = 0.01;       // Zeitschritt
    speer = new Wurfgeschoss(mygl, v0x, v0y, x0, y0, x, y, vx, vy, ax, ay, dt, ybottom);
-
+   kanone = new Kanone(mygl, x, y);
+   
    v0x = 0;
    v0y = 0;
    x0 = 8;
@@ -107,14 +111,18 @@ public void display(GLAutoDrawable drawable)
   M = Mat4.ID;
   mygl.setM(gl, M);
   
-  //zeichneKreis(gl, 0.2f, (float)x, (float)y, 20);
   if (stopped) return;
   
   speer.updateCoords();
   speer.rotateRelative(gl, M);
   speer.draw(gl, 1.2f, 0.04f, 0.2f);
   
-  //M für Kugel zurück setzen
+  M = Mat4.ID;
+  mygl.setM(gl, M);
+  kanone.rotateRelative(gl, M);
+  kanone.draw(gl, (float) kanone.getX(), (float) kanone.getY());
+  
+  //M zurück setzen
   M = Mat4.ID;
   mygl.setM(gl, M);
   
@@ -164,10 +172,12 @@ public void windowOpened(WindowEvent e) {  }
 public void keyPressed(KeyEvent e)
 { int key = e.getKeyCode();
   switch (key)
-  { case KeyEvent.VK_UP : speer.setV0y( speer.getV0y() + 0.5f); //v0y += 0.5;
-                          break;
-    case KeyEvent.VK_DOWN : speer.setV0y( speer.getV0y() - 0.5f ); //v0y -= 0.5;
-                          break;
+  { case KeyEvent.VK_UP : 
+  		kanone.setAngle( kanone.getAngle() + 0.5f);
+  		break;
+    case KeyEvent.VK_DOWN :
+		kanone.setAngle( kanone.getAngle() - 0.5f);
+		break;
   }
 }
 
@@ -175,8 +185,24 @@ public void keyReleased(KeyEvent e) { }
 
 public void keyTyped(KeyEvent e)
 { char code = e.getKeyChar();
-  if (code == 's')
-    stopped = !stopped;
+	switch (code){
+		case 's' : System.out.println("Schuss!");
+					readyToShoot = false;
+					break;
+		case 'r' : System.out.println("Reset!");
+					speer.resetPos();
+					blech.resetPos();
+					kanone.reset();
+					readyToShoot = true;
+					break;
+		case 'v' : System.out.println("Abschussgeschw. kleiner");
+					speer.setV0y( speer.getV0y() - 0.5f ); //v0y -= 0.5;
+					break;
+		case 'V' : System.out.println("Abschussgeschw. grösser");
+					speer.setV0y( speer.getV0y() + 0.5f ); //v0y -= 0.5;
+					break;
+	}
+
 }
 
 }

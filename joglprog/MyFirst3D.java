@@ -98,6 +98,7 @@ public class MyFirst3D
        quad = new Quader(mygl);
        rotk = new RotKoerper(mygl);
        
+       //#Camera
        FPSAnimator anim = new FPSAnimator(canvas, 200, true);
        anim.start();
     }

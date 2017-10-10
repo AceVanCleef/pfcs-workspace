@@ -73,12 +73,7 @@ public abstract class PhysObj {
 		  y = y + vy*dt;
 		  vx = vx + ax*dt;
 		  vy = vy + ay*dt;
-		  if (y < ybottom)
-		  {  x=x0;
-		     y=y0;
-		     vx=v0x;
-		     vy=v0y;
-		  }
+		  
 	}
 	
 	public void rotateRelative(GL3 gl, Mat4 M){
@@ -88,6 +83,13 @@ public abstract class PhysObj {
 		  M = M.postMultiply( Mat4.rotate( (float) alpha, 0, 0, 1) ); //M = M x R (transl. i. objektlokalen Koord.sys.)
 		  
 		  mygl.setM(gl, M);
+	}
+	
+	public void resetPos(){
+		 x=x0;
+	     y=y0;
+	     vx=v0x;
+	     vy=v0y;
 	}
 
 	/******************* get / set ************************/
