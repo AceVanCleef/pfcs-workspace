@@ -29,22 +29,10 @@ double znear = -100, zfar = 100;
 
 final double g = 9.81;  // Erdbeschl.
 final double m = 1;     // Masse
-//double v0x = 6;   // Anfangsgeschw.
-//double v0y = 10;   // Anfangsgeschw.
-//double x0 = -8;
-//double y0 = 0;
-//double x = x0;
-//double y = y0;
-//double vx = v0x;
-//double vy = v0y;
-//double ax = 0;
-//double ay = -g;
-//double dt = 0.01;       // Zeitschritt
 boolean stopped = false;
 
 Wurfgeschoss speer;
-
-//#Fallobjekt
+Fallobjekt blech;
 
 
 //  ---------  Methoden  ----------------------------------
@@ -68,64 +56,6 @@ void createFrame()                                    // Fenster erzeugen
    canvas.addKeyListener(this);
 };
 
-
-public void zeichneKreis(GL3 gl, float r,
-        float xm, float ym, int nPkte)
-{  double phi = 2*Math.PI / nPkte;
-  double x,y;
-  mygl.rewindBuffer(gl);
-    mygl.putVertex(xm,ym,0);
-    for (int i=0; i <= nPkte; i++)
-    {  x = xm + r * Math.cos(i*phi);
-       y = ym + r * Math.sin(i*phi);
-       mygl.putVertex((float)x,(float)y,0);
-    }
-  mygl.copyBuffer(gl);
-  mygl.drawArrays(gl,GL3.GL_TRIANGLE_FAN);
-}
-
-//#Fallobjekt
-public void zeichneFallobjekt(GL3 gl, float x1, float y1,
-						float x2, float y2, float x3, float y3, float x4, float y4){
-	mygl.rewindBuffer(gl);             // Vertex-Buffer zuruecksetzen
-	
-	mygl.putVertex(x1, y1, 0);
-	mygl.putVertex(x2, y2, 0);
-	mygl.putVertex(x3, y3, 0);
-	mygl.putVertex(x4, y4, 0);
-	
-	mygl.copyBuffer(gl);
-	mygl.drawArrays(gl,GL3.GL_TRIANGLES);
-}
-
-
-//public void zeichneDreieck(GL3 gl, float x1, float y1,
-//                         float x2, float y2, float x3, float y3)
-//{  mygl.rewindBuffer(gl);             // Vertex-Buffer zuruecksetzen
-//   mygl.putVertex(x1,y1,0);           // Eckpunkte in VertexArray speichern
-//   mygl.putVertex(x2,y2,0);
-//   mygl.putVertex(x3,y3,0);
-//   mygl.copyBuffer(gl);
-//   mygl.drawArrays(gl,GL3.GL_TRIANGLES);
-//}
-//
-//public void zeichneSpeer(GL3 gl, float a, float b, float c) {
-//	mygl.rewindBuffer(gl);             // Vertex-Buffer zuruecksetzen
-//		//Viereckige Komponente d. Speers
-//	   mygl.putVertex(-a,-b,0);           // Eckpunkte in VertexArray speichern
-//	   mygl.putVertex(a,-b,0);           // Eckpunkte in VertexArray speichern
-//	   mygl.putVertex(-a,b,0);           // Eckpunkte in VertexArray speichern
-//	   mygl.putVertex(a,b,0);           // Eckpunkte in VertexArray speichern
-//	   
-//	   mygl.copyBuffer(gl);
-//	   mygl.drawArrays(gl,GL3.GL_TRIANGLE_FAN);
-//	   
-//	   //Speerspitzen (Anfang und Ende)
-//	   zeichneDreieck(gl, a, -b, a+c, 0, a, b);
-//	   zeichneDreieck(gl, -a, b, -(a+c), 0, -a, -b);
-//	   
-//	   //#Speer zeichnen: statt 2x Dreiecke und 1x Viereck, ein 6-Eck zeichnen
-//}
 
 
 //  ----------  OpenGL-Events   ---------------------------
@@ -154,6 +84,15 @@ public void init(GLAutoDrawable drawable)             //  Initialisierung
 	 double ay = -g;
 	 double dt = 0.01;       // Zeitschritt
    speer = new Wurfgeschoss(mygl, v0x, v0y, x0, y0, x, y, vx, vy, ax, ay, dt, ybottom);
+
+   v0x = 0;
+   v0y = 0;
+   x0 = 8;
+   y0 = 5;
+   x = x0; y = y0;
+   vx = v0x; vy = v0y;
+   ax = 0; ay = -g;
+   blech = new Fallobjekt(mygl, v0x, v0y, x0, y0, x, y, vx, vy, ax, ay, dt, ybottom);
 }
 
 
@@ -170,30 +109,17 @@ public void display(GLAutoDrawable drawable)
   
   //zeichneKreis(gl, 0.2f, (float)x, (float)y, 20);
   if (stopped) return;
-//  x = x + vx*dt;
-//  y = y + vy*dt;
-//  vx = vx + ax*dt;
-//  vy = vy + ay*dt;
-//  if (y < ybottom)
-//  {  x=x0;
-//     y=y0;
-//     vx=v0x;
-//     vy=v0y;
-//  }
   
   speer.updateCoords();
-  
-  //#Speerwurf
-//  M = Mat4.translate((float) speer.getX(), (float) speer.getY(), 0);	//Matrixtransformation: Vorwärtsbewegung des Speers
-//  double alpha = Math.atan(speer.getVy() / speer.getVx());	//Drehwinkel in Radiant
-//  alpha = alpha * 180 / Math.PI;		//Drehwinkel in Grad
-//  M = M.postMultiply( Mat4.rotate( (float) alpha, 0, 0, 1) ); //M = M x R (transl. i. objektlokalen Koord.sys.)
-
   speer.rotateRelative(gl, M);
-  
-//  mygl.setM(gl, M);
-  //zeichneSpeer(gl, 1.2f, 0.04f, 0.2f);
   speer.draw(gl, 1.2f, 0.04f, 0.2f);
+  
+  //M für Kugel zurück setzen
+  M = Mat4.ID;
+  mygl.setM(gl, M);
+  
+  blech.updateCoords();
+  blech.draw(gl, (float) blech.getX(), (float) blech.getY());
 }
 
 

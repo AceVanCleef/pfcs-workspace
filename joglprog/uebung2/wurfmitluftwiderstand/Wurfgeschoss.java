@@ -51,7 +51,7 @@ public class Wurfgeschoss extends PhysObj {
 		zeichneDreieck(gl, a, -b, a+c, 0, a, b);
 		zeichneDreieck(gl, -a, b, -(a+c), 0, -a, -b);
 		
-		//#Speer zeichnen: statt 2x Dreiecke und 1x Viereck, ein 6-Eck zeichnen
+		//Todo: Speer zeichnen: statt 2x Dreiecke und 1x Viereck, ein 6-Eck zeichnen
 	}
 	
 	@Override
