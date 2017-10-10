@@ -57,6 +57,8 @@ public abstract class PhysObj {
 		this.y = y;
 		this.vx = vx;
 		this.vy = vy;
+		this.ax = ax;
+		this.ay = ay;
 		this.dt = dt;
 		this.ybottom = ybottom;
 	}

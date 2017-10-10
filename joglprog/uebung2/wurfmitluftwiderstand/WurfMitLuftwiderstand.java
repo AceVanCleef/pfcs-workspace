@@ -188,8 +188,8 @@ public void display(GLAutoDrawable drawable)
 //  double alpha = Math.atan(speer.getVy() / speer.getVx());	//Drehwinkel in Radiant
 //  alpha = alpha * 180 / Math.PI;		//Drehwinkel in Grad
 //  M = M.postMultiply( Mat4.rotate( (float) alpha, 0, 0, 1) ); //M = M x R (transl. i. objektlokalen Koord.sys.)
-//  
-  //speer.rotateRelative(gl, M);
+
+  speer.rotateRelative(gl, M);
   
 //  mygl.setM(gl, M);
   //zeichneSpeer(gl, 1.2f, 0.04f, 0.2f);
