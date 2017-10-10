@@ -4,9 +4,10 @@ import java.awt.event.*;
 import com.jogamp.opengl.*;
 import ch.fhnw.util.math.*;
 import com.jogamp.opengl.awt.*;
+import com.jogamp.opengl.util.FPSAnimator;
 
 public class MyFirst3D
-       implements WindowListener, GLEventListener
+       implements WindowListener, GLEventListener, KeyListener
 {
 
     //  ---------  globale Daten  ---------------------------
@@ -14,7 +15,7 @@ public class MyFirst3D
     String windowTitle = "JOGL-Application";
     int windowWidth = 800;
     int windowHeight = 600;
-    String vShader = MyShaders.vShader2;                 // Vertex-Shader mit Transformations-Matrizen
+    String vShader = MyShaders.vShader1;                 // Vertex-Shader mit Transformations-Matrizen
     String fShader = MyShaders.fShader0;                 // Fragment-Shader
     int maxVerts = 2048;                                 // max. Anzahl Vertices im Vertex-Array
     GLCanvas canvas;                                     // OpenGL Window
@@ -27,6 +28,8 @@ public class MyFirst3D
     Mat4 M;                                            // ModelView-Matrix
     Mat4 P;                                            // Projektions-Matrix
 
+    float elevation = 1f;
+    
 
     //  -------- Viewing-Volume  ---------------
     float left=-4f, right=4f;
@@ -55,6 +58,8 @@ public class MyFirst3D
        canvas = new GLCanvas(glCaps);
        canvas.addGLEventListener(this);
        f.add(canvas);
+       f.setVisible(true);
+       f.addKeyListener(this);
        f.setVisible(true);
     };
 
@@ -92,6 +97,9 @@ public class MyFirst3D
        mygl = new MyGLBase1(gl, programId, maxVerts);
        quad = new Quader(mygl);
        rotk = new RotKoerper(mygl);
+       
+       FPSAnimator anim = new FPSAnimator(canvas, 200, true);
+       anim.start();
     }
 
 
@@ -99,7 +107,15 @@ public class MyFirst3D
     public void display(GLAutoDrawable drawable)
     { GL3 gl = drawable.getGL().getGL3();
       gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
-      mygl.setM(gl,Mat4.lookAt(A,B,up));                  // Blickrichtung A --> B
+      
+      //#Camera
+      Mat4 R1 = Mat4.rotate(-elevation,  1,0,0);
+      Mat4 R2 = Mat4.rotate(-elevation,  0,1,0);
+      Mat4 R = R1.preMultiply(R2);
+      mygl.setM(gl, Mat4.lookAt(R.transform(A),  B,  R.transform(up)));
+      
+      
+      //mygl.setM(gl,Mat4.lookAt(A,B,up));                  // Blickrichtung A --> B
       mygl.setColor(1,1,1);
       mygl.drawAxis(gl,2,2,2);                            // Koordinatenachsen
       mygl.setLightPosition(gl,-2,2,2);
@@ -145,5 +161,24 @@ public class MyFirst3D
     public void windowDeiconified(WindowEvent e) {  }
     public void windowIconified(WindowEvent e) {  }
     public void windowOpened(WindowEvent e) {  }
+    
+    public void keyPressed(KeyEvent e)
+    { int key = e.getKeyCode();
+      switch (key)
+      { case KeyEvent.VK_UP : elevation++;
+                              break;
+        case KeyEvent.VK_DOWN : elevation--;
+                              break;
+      }
+    }
+
+    public void keyReleased(KeyEvent e) { }
+
+    public void keyTyped(KeyEvent e)
+    { char code = e.getKeyChar();
+      if (code == 's')
+        //stopped = !stopped;
+    	  System.out.println("hello");
+    }
 
 }
