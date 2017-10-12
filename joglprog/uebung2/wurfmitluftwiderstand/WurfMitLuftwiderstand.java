@@ -35,7 +35,25 @@ Wurfgeschoss speer;
 Fallobjekt blech;
 Kanone kanone;
 
+Vec2 pos0Line;
+Vec2 posLine;
+Vec2 v0Norm;
+float alpha;
+Vec2 pos2Line;
+
+float feuerkraft = 5f;
+Vec2 newVelocity;
+
 boolean readyToShoot = true;
+
+public void zeichneLinie(GL3 gl, float x1, float y1, float x2, float y2) {
+	mygl.rewindBuffer(gl);             // Vertex-Buffer zuruecksetzen
+	mygl.putVertex(x1,y1,0);           // Eckpunkte in VertexArray speichern
+	mygl.putVertex(x2,y2,0);
+	mygl.copyBuffer(gl);
+	mygl.drawArrays(gl,GL3.GL_LINES);
+}
+
 
 
 //  ---------  Methoden  ----------------------------------
@@ -89,6 +107,20 @@ public void init(GLAutoDrawable drawable)             //  Initialisierung
    speer = new Wurfgeschoss(mygl, v0x, v0y, x0, y0, x, y, vx, vy, ax, ay, dt, ybottom);
    kanone = new Kanone(mygl, x, y);
    
+   
+   //Von Ursprung zu Startpunkt des Richtungsvektur_Abschussrichtung
+   pos0Line = new Vec2(speer.getX0(), speer.getY0());
+   //Von Ursprung zu Endpunkt des Richtungsvektur_Abschussrichtung
+   posLine = new Vec2(pos0Line.x, pos0Line.y);
+   //x-Einheitsvektor normalisiert (Länge = 1)
+   v0Norm = new Vec2(speer.getV0x(), speer.getV0y());
+   v0Norm = v0Norm.normalize();
+   //Winkel zwischen Richtungsvektor_Abschussrichtung und normalisierter x-Einheitsvektor
+   alpha = (float) Math.acos( v0Norm.dot(Vec2.X) );	//Vec2.X = (1,0). .dot() -> Skalarprodukt
+   
+   //Linearkombination aus pos0Line und posLine = Richtungsvektor_Abschussrichtung
+   pos2Line = new Vec2(pos0Line.x + posLine.x, pos0Line.y + posLine.y);
+   
    v0x = 0;
    v0y = 0;
    x0 = 8;
@@ -120,7 +152,18 @@ public void display(GLAutoDrawable drawable)
   M = Mat4.ID;
   mygl.setM(gl, M);
   kanone.rotateRelative(gl, M);
-  kanone.draw(gl, (float) kanone.getX(), (float) kanone.getY());
+  //kanone.draw(gl, (float) kanone.getX(), (float) kanone.getY());
+
+  //M zurück setzen
+  M = Mat4.ID;
+  mygl.setM(gl, M);
+  //Linie
+//  double sin = Math.tan(alpha) * Math.cos(alpha);
+//  double cos = Math.sin(alpha) / Math.tan(alpha);
+  Vec2 sin = new Vec2(0, Math.sin(alpha));
+  Vec2 cos = new Vec2(Math.cos(alpha), 0);
+  pos2Line = new Vec2(sin.x + cos.x, sin.y + cos.y);
+  zeichneLinie(gl, posLine.x, posLine.y, pos2Line.x, pos2Line.y);
   
   //M zurück setzen
   M = Mat4.ID;
@@ -174,9 +217,11 @@ public void keyPressed(KeyEvent e)
   switch (key)
   { case KeyEvent.VK_UP : 
   		kanone.setAngle( kanone.getAngle() + 0.5f);
+  	    alpha += 0.5f;
   		break;
     case KeyEvent.VK_DOWN :
 		kanone.setAngle( kanone.getAngle() - 0.5f);
+		alpha -= 0.5f;
 		break;
   }
 }
@@ -197,9 +242,35 @@ public void keyTyped(KeyEvent e)
 					break;
 		case 'v' : System.out.println("Abschussgeschw. kleiner");
 					speer.setV0y( speer.getV0y() - 0.5f ); //v0y -= 0.5;
+					
+					feuerkraft -= 0.5f;
+			  		
+			  		newVelocity = v0Norm.scale(feuerkraft);
+			  		
+			  		//Speer ausrichten
+			  		speer.setVx( newVelocity.x);
+			  		speer.setVy( newVelocity.y);
+			  		
+			  		//Endpunkt des Richtugnsvektors_Abschussrichtung anpassen:
+			  		pos2Line = new Vec2(pos0Line.x + newVelocity.x, pos0Line.y + newVelocity.y);
+			  		
+			  		
 					break;
 		case 'V' : System.out.println("Abschussgeschw. grösser");
-					speer.setV0y( speer.getV0y() + 0.5f ); //v0y -= 0.5;
+					speer.setV0y( speer.getV0y() + 0.5f ); //v0y += 0.5;
+					
+					feuerkraft += 0.5f;
+			  		
+			  		newVelocity = v0Norm.scale(feuerkraft);
+			  		
+			  		//Speer ausrichten
+			  		speer.setVx( newVelocity.x);
+			  		speer.setVy( newVelocity.y);
+			  		
+			  		//Endpunkt des Richtugnsvektors_Abschussrichtung anpassen:
+			  		pos2Line = new Vec2(pos0Line.x + newVelocity.x, pos0Line.y + newVelocity.y);
+			  		
+			  		
 					break;
 	}
 

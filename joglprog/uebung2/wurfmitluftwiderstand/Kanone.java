@@ -46,11 +46,11 @@ public class Kanone {
 //		  M = M.postMultiply( Mat4.rotate( (float) alpha, 0, 0, 1) ); //M = M x R (transl. i. objektlokalen Koord.sys.)
 //		  
 		//todo: von absoluter drehung zu lokaler
-		  //double alpha = Math.atan(y / x);	//Drehwinkel in Radiant
 		  double alpha = angle * 180 / Math.PI;		//Drehwinkel in Grad
-		  M = M.preMultiply( Mat4.rotate( (float) alpha, 0, 0, 1) ); //M = M x R (transl. i. objektlokalen Koord.sys.)
+		  //M = M.postMultiply( Mat4.rotate( (float) alpha, 0, 0, 1) ); //M = M x R (transl. i. objektlokalen Koord.sys.)
 		  
-		  
+		  M = Mat4.rotate( (float) alpha, 0, 0, 1);
+		  M = M.postMultiply( Mat4.translate(0, 0, 0) );
 		  mygl.setM(gl, M);
 	}
 	
