@@ -42,12 +42,19 @@ double dt = 0.01;       // Zeitschritt
 boolean stopped = false;
 
 
-//@Zielscheibe
+//#Zielscheibe
 double targetX0 = 8, targetY0 = 5;
 double targetX = targetX0, targetY = targetY0;
 double targetV0X = 0, targetV0Y = 0;
 double targetVX = targetV0X, targetVY = targetV0Y;
 double targetAX = 0, targetAY = -g;
+
+//#Anvisierlinie
+Vec2 ursprungZuLinie = new Vec2(x0, y0);
+Vec2 ursprungZuLinienSpitze = new Vec2(ursprungZuLinie.x, ursprungZuLinie.y);
+Vec2 linie = new Vec2(ursprungZuLinie.x + ursprungZuLinienSpitze.x, ursprungZuLinie.y + ursprungZuLinienSpitze.y);
+double alpha = Math.atan(vy / vx) * 180 / Math.PI;	//Drehwinkel in Grad
+
 
 //  ---------  Methoden  ----------------------------------
 
@@ -109,6 +116,13 @@ public void zeichneDreieck(GL3 gl, float x1, float y1,
    mygl.drawArrays(gl,GL3.GL_TRIANGLES);
 }
 
+public void zeichneLinie(GL3 gl, float x1, float y1, float x2, float y2) {
+	mygl.rewindBuffer(gl);             // Vertex-Buffer zuruecksetzen
+	mygl.putVertex(x1,y1,0);           // Eckpunkte in VertexArray speichern
+	mygl.putVertex(x2,y2,0);
+	mygl.copyBuffer(gl);
+	mygl.drawArrays(gl,GL3.GL_LINES);
+}
 
 //  ----------  OpenGL-Events   ---------------------------
 
@@ -147,7 +161,7 @@ public void display(GLAutoDrawable drawable)
   }
   
   //#Zielscheibe
-  mygl.setColor(1,1,1);                            // Farbe der Vertices
+  mygl.setColor(0,1,1);                            // Farbe der Vertices
   zeichneViereck(gl, (float) targetX, (float) targetY, 2.5f, 5.0f);
 
   targetX = targetX + targetVX*dt;
@@ -160,6 +174,14 @@ public void display(GLAutoDrawable drawable)
 	  targetVY = targetV0Y;
 	  targetVX = targetV0X;
   }
+  
+  //#Anvisierlinie
+  mygl.setColor(0,0,0);                            		// Farbe der Vertices
+  alpha = Math.atan(v0y / v0x) * 180 / Math.PI;	//Drehwinkel in Grad
+  Vec2 sin = new Vec2(0, Math.sin(alpha));
+  Vec2 cos = new Vec2(Math.cos(alpha), 0);
+  linie = new Vec2(linie.x, sin.y + cos.y);
+  zeichneLinie(gl, (float) ursprungZuLinie.x, (float) ursprungZuLinie.y, (float) linie.x, (float) linie.y);
 }
 
 
