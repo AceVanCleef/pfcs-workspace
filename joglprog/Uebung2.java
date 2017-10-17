@@ -94,7 +94,8 @@ public void zeichneKreis(GL3 gl, float r,
 }
 
 public void zeichneViereck(GL3 gl, float x1, float y1, float width, float height) 
-{	mygl.putVertex(x1, y1, 0);
+{	mygl.rewindBuffer(gl);             // Vertex-Buffer zuruecksetzen
+	mygl.putVertex(x1, y1, 0);
 	mygl.putVertex(x1 + width, y1, 0);
 	mygl.putVertex(x1, y1 + height, 0);
 	mygl.putVertex(x1 + width, y1 + height, 0);
@@ -120,6 +121,9 @@ public void zeichneLinie(GL3 gl, float x1, float y1, float x2, float y2) {
 	mygl.rewindBuffer(gl);             // Vertex-Buffer zuruecksetzen
 	mygl.putVertex(x1,y1,0);           // Eckpunkte in VertexArray speichern
 	mygl.putVertex(x2,y2,0);
+	
+	System.out.println("x1: " + x1 + "y1 " + y1 + "x2 " + x2 + " y2 " +y2);
+	
 	mygl.copyBuffer(gl);
 	mygl.drawArrays(gl,GL3.GL_LINES);
 }
@@ -144,8 +148,13 @@ public void init(GLAutoDrawable drawable)             //  Initialisierung
 
 @Override
 public void display(GLAutoDrawable drawable)
-{ GL3 gl = drawable.getGL().getGL3();
+{ 
+	
+	GL3 gl = drawable.getGL().getGL3();
   gl.glClear(GL3.GL_COLOR_BUFFER_BIT);             // Bildschirm loeschen
+	M = Mat4.ID;
+	mygl.setM(gl, M);
+  
   mygl.setColor(1,1,0);                            // Farbe der Vertices
   zeichneKreis(gl, 0.2f, (float)x, (float)y, 20);
   if (stopped) return;
@@ -178,10 +187,14 @@ public void display(GLAutoDrawable drawable)
   //#Anvisierlinie
   mygl.setColor(0,0,0);                            		// Farbe der Vertices
   alpha = Math.atan(v0y / v0x) * 180 / Math.PI;	//Drehwinkel in Grad
-  Vec2 sin = new Vec2(0, Math.sin(alpha));
-  Vec2 cos = new Vec2(Math.cos(alpha), 0);
-  linie = new Vec2(linie.x, sin.y + cos.y);
-  zeichneLinie(gl, (float) ursprungZuLinie.x, (float) ursprungZuLinie.y, (float) linie.x, (float) linie.y);
+  
+  M = Mat4.translate((float) ursprungZuLinie.x, (float) ursprungZuLinie.y, 0.0f);	//setzte 0-Punkt des lokalen Systems
+  M = M.postMultiply(Mat4.rotate((float) alpha, 0.0f, 0.0f, 1.0f));					//im lokalen System rotieren.
+  mygl.setM(gl, M);
+  linie = new Vec2(Math.cos(alpha), Math.sin(alpha));
+  zeichneLinie(gl, (float) 0, (float) 0, 
+		  (float) 5, (float) 0);
+  
 }
 
 
@@ -226,9 +239,9 @@ public void windowOpened(WindowEvent e) {  }
 public void keyPressed(KeyEvent e)
 { int key = e.getKeyCode();
   switch (key)
-  { case KeyEvent.VK_UP : v0y += 0.5;
+  { case KeyEvent.VK_UP : v0y += 0.1;
                           break;
-    case KeyEvent.VK_DOWN : v0y -= 0.5;
+    case KeyEvent.VK_DOWN : v0y -= 0.1;
                           break;
   }
 }
