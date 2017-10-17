@@ -152,7 +152,7 @@ public void display(GLAutoDrawable drawable)
   M = Mat4.ID;
   mygl.setM(gl, M);
   kanone.rotateRelative(gl, M);
-  //kanone.draw(gl, (float) kanone.getX(), (float) kanone.getY());
+  kanone.draw(gl, (float) kanone.getX(), (float) kanone.getY());
 
   //M zurück setzen
   M = Mat4.ID;
