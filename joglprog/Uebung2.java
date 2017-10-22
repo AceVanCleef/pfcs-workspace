@@ -31,7 +31,7 @@ final double m = 1;     // Masse
 double v0x = 6;   // Anfangsgeschw.
 double v0y = 10;   // Anfangsgeschw.
 double x0 = -8;
-double y0 = 0;
+double y0 = -5;
 double x = x0;
 double y = y0;
 double vx = v0x;
@@ -171,7 +171,7 @@ public void display(GLAutoDrawable drawable)
   
   //#Zielscheibe
   mygl.setColor(0,1,1);                            // Farbe der Vertices
-  zeichneViereck(gl, (float) targetX, (float) targetY, 2.5f, 5.0f);
+  zeichneViereck(gl, (float) targetX, (float) targetY, 1.0f, 2.0f);
 
   targetX = targetX + targetVX*dt;
   targetY = targetY + targetVY*dt;
@@ -185,7 +185,7 @@ public void display(GLAutoDrawable drawable)
   }
   
   //#Anvisierlinie
-  mygl.setColor(0,0,0);                            		// Farbe der Vertices
+  mygl.setColor(1,1,1);                            		// Farbe der Vertices
   alpha = Math.atan(v0y / v0x) * 180 / Math.PI;	//Drehwinkel in Grad
   
   M = Mat4.translate((float) ursprungZuLinie.x, (float) ursprungZuLinie.y, 0.0f);	//setzte 0-Punkt des lokalen Systems
