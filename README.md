@@ -9,7 +9,7 @@ This course utilizes openGL and some additional helper classes provided by the l
 
 In Klasse: Lissajous.java
 
-### Steuerung
+### Steuerung  
 s: Animation pausieren
 
 
@@ -17,10 +17,10 @@ s: Animation pausieren
 
 In Klasse: Uebung2.java
 
-### Steuerung
-Pfeil aufwärts: Abschusswinkel erhöhen.
-Pfeil abwärts: Abschusswinkel verringern.
-V: Abschussgeschwindigkeit erhöhen.
-v: Abschussgeschwindigkeit verringern.
-s: Schuss auslösen.
-r: In Ausgangsposition zurücksetzen.
+### Steuerung  
+Pfeil aufwärts: Abschusswinkel erhöhen.  
+Pfeil abwärts: Abschusswinkel verringern.  
+V: Abschussgeschwindigkeit erhöhen.  
+v: Abschussgeschwindigkeit verringern.  
+s: Schuss auslösen.  
+r: In Ausgangsposition zurücksetzen.  
