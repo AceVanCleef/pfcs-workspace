@@ -1,6 +1,8 @@
 //  -------------   JOGL 3D-Programm  -------------------
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Stack;
+
 import com.jogamp.opengl.*;
 import ch.fhnw.util.math.*;
 import com.jogamp.opengl.awt.*;
@@ -15,12 +17,16 @@ public class MyFirst3D
     String windowTitle = "JOGL-Application";
     int windowWidth = 800;
     int windowHeight = 600;
-    String vShader = MyShaders.vShader1;                 // Vertex-Shader mit Transformations-Matrizen
+    //#Beleuchtung: benötigt vertex shader 'vShader2'
+    String vShader = MyShaders.vShader2;                 // Vertex-Shader mit Transformations-Matrizen
     String fShader = MyShaders.fShader0;                 // Fragment-Shader
     int maxVerts = 2048;                                 // max. Anzahl Vertices im Vertex-Array
     GLCanvas canvas;                                     // OpenGL Window
     MyGLBase1 mygl;                                      // OpenGL Basis-Funktionen
 
+    //#Transformationsmatrix - Management (wegen immutable M)
+    Stack<Mat4> matrixStack = new Stack<>();
+    
 
     Quader quad ;
     RotKoerper rotk;
@@ -28,7 +34,9 @@ public class MyFirst3D
     Mat4 M;                                            // ModelView-Matrix
     Mat4 P;                                            // Projektions-Matrix
 
+    //#Kamerasystem
     float elevation = 1f;
+    float azimut = 1f;
     
 
     //  -------- Viewing-Volume  ---------------
@@ -80,7 +88,21 @@ public class MyFirst3D
        mygl.drawArrays(gl,GL3.GL_TRIANGLES);
     }
 
-
+    public void zeichneKreis(GL3 gl, float r, float xm, float ym, int nPkte)
+	{  	
+    	double phi = 2*Math.PI / nPkte;
+    	double x,y;
+    	mygl.rewindBuffer(gl);             // Vertex-Buffer zuruecksetzen
+		mygl.putVertex(xm,ym,0);           // Kreismittelpunkt in VertexArray speichern
+		for (int i=0; i < nPkte + 1; i++) {
+			x = xm + r * Math.cos(i * phi);
+			y = ym + r * Math.sin(i * phi);
+			mygl.putVertex((float)x, (float)y, 0);
+		}
+		
+		mygl.copyBuffer(gl);
+		mygl.drawArrays(gl,GL3.GL_TRIANGLE_FAN);
+	}
 
     //  ----------  OpenGL-Events   ---------------------------
 
@@ -98,7 +120,7 @@ public class MyFirst3D
        quad = new Quader(mygl);
        rotk = new RotKoerper(mygl);
        
-       //#Camera
+       //#Kamerasystem
        FPSAnimator anim = new FPSAnimator(canvas, 200, true);
        anim.start();
     }
@@ -109,21 +131,41 @@ public class MyFirst3D
     { GL3 gl = drawable.getGL().getGL3();
       gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
       
-      //#Camera
+      //#Kamerasystem
       Mat4 R1 = Mat4.rotate(-elevation,  1,0,0);
-      Mat4 R2 = Mat4.rotate(-elevation,  0,1,0);
+      Mat4 R2 = Mat4.rotate(-azimut,  0,1,0);
       Mat4 R = R1.preMultiply(R2);
-      mygl.setM(gl, Mat4.lookAt(R.transform(A),  B,  R.transform(up)));
+      M = Mat4.lookAt(R.transform(A),  B,  R.transform(up));
+      mygl.setM(gl, M);
       
       
       //mygl.setM(gl,Mat4.lookAt(A,B,up));                  // Blickrichtung A --> B
       mygl.setColor(1,1,1);
+      mygl.setShadingLevel(gl,  0);	//#Beleuchtung ausschalten.
       mygl.drawAxis(gl,2,2,2);                            // Koordinatenachsen
-      mygl.setLightPosition(gl,-2,2,2);
-      mygl.setColor(1,0,0);
-      zeichneDreieck(gl,-1,0.3f,0.5f,  2.8f,0,-1,  1f,1.5F,-1);
+      
+      
+      //#Beleuchtung
+      Vec3 lightPos = new Vec3(0,1,4);
+      mygl.setLightPosition(gl, lightPos.x, lightPos.y, lightPos.z);	//im absoluten Raumsystem -> wird autom. ins Kamerasystem transformiert.
+      mygl.setShadingParam(gl, 0.5f, 0.8f);	//gl, ambient light, diffuse light (direkt beleuchtet)
+      mygl.setShadingLevel(gl, 1);
+      
+      
+      //#Beleuchtung testen mit Quader
       mygl.setColor(1,1,0);
-      zeichneDreieck(gl, -0.4f,0.2f,-1, 3,2,3, -1.8f,1f,-1);
+      quad.zeichne(gl, 3.0f, 2.0f, 1.5f, true);
+      
+      matrixStack.push(M);	//M sich merken.
+      
+      //#Beleuchtung -squelle zeichnen
+      mygl.setColor(0,0,0);
+      M = M.postMultiply(Mat4.translate(lightPos.x, lightPos.y, lightPos.z));
+      mygl.setM(gl, M);
+      zeichneKreis(gl, 0.2f, 0,0, 10);
+      
+      M = matrixStack.pop();	//M in "Originalzustand" wieder einsetzen.
+      mygl.setM(gl, M);
     }
 
 
@@ -166,10 +208,14 @@ public class MyFirst3D
     public void keyPressed(KeyEvent e)
     { int key = e.getKeyCode();
       switch (key)
-      { case KeyEvent.VK_UP : elevation++;
+      { case KeyEvent.VK_UP : elevation++;	//#Kamerasystem bewegen
                               break;
         case KeyEvent.VK_DOWN : elevation--;
                               break;
+        case KeyEvent.VK_LEFT : azimut--;	//#Kamerasystem bewegen
+        					  break;
+        case KeyEvent.VK_RIGHT : azimut++;
+        					  break;
       }
     }
 
