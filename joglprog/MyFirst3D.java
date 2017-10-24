@@ -114,7 +114,7 @@ public class MyFirst3D
        System.out.println("Shading Language: " + gl.glGetString(gl.GL_SHADING_LANGUAGE_VERSION));
        System.out.println();
        gl.glEnable(GL3.GL_DEPTH_TEST);
-       gl.glClearColor(0,0,1,1);
+       gl.glClearColor(0,0,0,1);
        int programId = MyShaders.initShaders(gl,vShader,fShader);
        mygl = new MyGLBase1(gl, programId, maxVerts);
        quad = new Quader(mygl);
@@ -153,19 +153,24 @@ public class MyFirst3D
       
       
       //#Beleuchtung testen mit Quader
-      mygl.setColor(1,1,0);
-      quad.zeichne(gl, 3.0f, 2.0f, 1.5f, true);
+      mygl.setColor(0,0.75f,0);
+      //quad.zeichne(gl, 3.0f, 2.0f, 1.5f, true);
+      //#Beleuchtung testen mit Kugel
+      rotk.zeichneKugel(gl,  1,  20,  20,  true);
       
       matrixStack.push(M);	//M sich merken.
       
       //#Beleuchtung -squelle zeichnen
-      mygl.setColor(0,0,0);
+      mygl.setColor(1,0,1);
       M = M.postMultiply(Mat4.translate(lightPos.x, lightPos.y, lightPos.z));
       mygl.setM(gl, M);
       zeichneKreis(gl, 0.2f, 0,0, 10);
       
       M = matrixStack.pop();	//M in "Originalzustand" wieder einsetzen.
       mygl.setM(gl, M);
+      
+      
+
     }
 
 
