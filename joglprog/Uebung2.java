@@ -31,7 +31,7 @@ final double m = 1;     // Masse
 double v0x = 6;   // Anfangsgeschw.
 double v0y = 10;   // Anfangsgeschw.
 double x0 = -8;
-double y0 = 0;
+double y0 = -5;
 double x = x0;
 double y = y0;
 double vx = v0x;
@@ -39,7 +39,7 @@ double vy = v0y;
 double ax = 0;
 double ay = -g;
 double dt = 0.01;       // Zeitschritt
-boolean stopped = false;
+boolean readyToShoot = false;
 
 
 //#Zielscheibe
@@ -157,12 +157,12 @@ public void display(GLAutoDrawable drawable)
   
   mygl.setColor(1,1,0);                            // Farbe der Vertices
   zeichneKreis(gl, 0.2f, (float)x, (float)y, 20);
-  if (stopped) return;
+  //if (readyToShoot) return;
   x = x + vx*dt;
   y = y + vy*dt;
   vx = vx + ax*dt;
   vy = vy + ay*dt;
-  if (y < ybottom)
+  if (readyToShoot)
   {  x=x0;
      y=y0;
      vx=v0x;
@@ -171,13 +171,13 @@ public void display(GLAutoDrawable drawable)
   
   //#Zielscheibe
   mygl.setColor(0,1,1);                            // Farbe der Vertices
-  zeichneViereck(gl, (float) targetX, (float) targetY, 2.5f, 5.0f);
+  zeichneViereck(gl, (float) targetX, (float) targetY, 1.0f, 2.0f);
 
   targetX = targetX + targetVX*dt;
   targetY = targetY + targetVY*dt;
   targetVX = targetVX + targetAX*dt;
   targetVY = targetVY + targetAY*dt;
-  if (targetY < ybottom - 20){
+  if (readyToShoot){
 	  targetX = targetX0;
 	  targetY = targetY0;
 	  targetVY = targetV0Y;
@@ -185,7 +185,7 @@ public void display(GLAutoDrawable drawable)
   }
   
   //#Anvisierlinie
-  mygl.setColor(0,0,0);                            		// Farbe der Vertices
+  mygl.setColor(1,1,1);                            		// Farbe der Vertices
   alpha = Math.atan(v0y / v0x) * 180 / Math.PI;	//Drehwinkel in Grad
   
   M = Mat4.translate((float) ursprungZuLinie.x, (float) ursprungZuLinie.y, 0.0f);	//setzte 0-Punkt des lokalen Systems
@@ -250,8 +250,12 @@ public void keyReleased(KeyEvent e) { }
 
 public void keyTyped(KeyEvent e)
 { char code = e.getKeyChar();
-  if (code == 's')
-    stopped = !stopped;
+	switch (code) {
+	case 'v': v0x -= 0.1; break;
+	case 'V': v0x += 0.1; break;
+	case 's': readyToShoot = false; break;
+	case 'r': readyToShoot = true; break;
+	}
 }
 
 }
