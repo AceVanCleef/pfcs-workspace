@@ -171,9 +171,10 @@ public class Uebung3_Bumerang
       mygl.setM(gl, M);
       bumerang.zeichne(gl, 0.2f, 0.05f, 0.2f, true);
       M = matrixStack.pop();	//M in "Originalzustand" wieder einsetzen.
-
+      mygl.setM(gl, M);
       //Throw Origin
       M = M.postMultiply(Mat4.translate((float) throwPosX, 1.0f, (float) throwPosZ));
+      //M = M.postMultiply(Mat4.rotate((float) w, 0.0f, 0.0f, 1.0f));
       mygl.setM(gl, M);
       throwOrigin.zeichneKugel(gl,  0.2f, 20, 20,  true);
       
@@ -247,9 +248,10 @@ public class Uebung3_Bumerang
 
     public void keyTyped(KeyEvent e)
     { char code = e.getKeyChar();
-      if (code == 's')
-        //stopped = !stopped;
-    	  System.out.println("hello");
+      switch (code){
+      	case 'w': w += 0.01f; break;
+      	case 's': w -= 0.01f; break;
+      }
     }
 
 }
