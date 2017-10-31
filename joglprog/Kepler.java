@@ -26,10 +26,16 @@ double xleft = -60, xright = 60;  // ViewingVol	[60 * 1000 km]
 double ybottom, ytop;
 double znear = -100, zfar = 100;
 
-double v0x = 0;   // Anfangsgeschw.
-double v0y = 0.003;   // Anfangsgeschw.	[km/s]
-double x0 = 42;
+
+//#Kepler
+final double g = 9.81e-6;	// Erdbeschl.
+double rE = 6.376;			//Erdradius
+double GM = g*rE*rE;		//G*M (G: Gravitationskonstante, M: Erdmasse)
+
+double x0 = 42;	//Radius Kreisbahn
 double y0 = 0;
+double v0x = 0;   // Anfangsgeschw.
+double v0y = Math.sqrt(GM / x0);   // Anfangsgeschw.	[km/s]
 double x = x0;
 double y = y0;
 double vx = v0x;
@@ -39,10 +45,16 @@ double ay;
 double dt = 60;       // Zeitschritt in sec.
 boolean stopped = false;
 
-//#Kepler
-final double g = 9.81e-6;	// Erdbeschl.
-double rE = 6.376;			//Erdradius
-double GM = g*rE*rE;		//G*M
+
+
+//LookAt-Parameter fuer Kamera-System
+Vec3 A = new Vec3(0,0,50);                   // Kamera-Pos. (Auge); 50 = 50'000 km
+Vec3 B = new Vec3(0,0,0);                   // Zielpunkt
+Vec3 up = new Vec3(0,1,0);                  // up-Richtung
+
+//#Kamerasystem
+float elevation = 1f;
+float azimut = 1f;
 
 //  ---------  Methoden  ----------------------------------
 
@@ -119,28 +131,39 @@ public void init(GLAutoDrawable drawable)             //  Initialisierung
 @Override
 public void display(GLAutoDrawable drawable)
 { GL3 gl = drawable.getGL().getGL3();
-  gl.glClear(GL3.GL_COLOR_BUFFER_BIT);             // Bildschirm loeschen
-  mygl.setColor(1,1,0);                            // Farbe der Vertices
-  
-  //M für Kugel zurück setzen
-  M = Mat4.ID;
-  mygl.setM(gl, M);
-  
-  zeichneKreis(gl, (float) rE, 0, 0, 20);		//Erde
-  zeichneKreis(gl, (float) (0.2 * rE), (float) x, (float) y, 20);
-  
-  System.out.println(x + ":" + y);
-  
-  if (stopped) return;
-  x = x + vx*dt;
-  y = y + vy*dt;
-  double r = Math.sqrt(x*x + y*y);	//Länge eines Vektors. r := Abstand zw. Himmelskörper
-  double r3 = r*r*r;
-  ax = -GM*x/r3;
-  ay = -GM*y/r3;
-  
-  vx = vx + ax*dt;
-  vy = vy + ay*dt;
+	gl.glClear(GL3.GL_COLOR_BUFFER_BIT);                        // Bildschirm loeschen
+	mygl.setColor(1,1,0);                               // Farbe der Vertices
+	M = Mat4.ID;
+	mygl.setM(gl,M);
+	
+	Mat4 R1 = Mat4.rotate(-elevation,1,0,0);
+	Mat4 R2 = Mat4.rotate(azimut,0,1,0);
+	Mat4 R = R1.preMultiply(R2);
+	M = Mat4.lookAt(R.transform(A),B,R.transform(up));
+	mygl.setM(gl,M);
+	
+	mygl.drawAxis(gl,50,50,50);                            // Koordinatenachsen
+	
+	M = M.postMultiply(Mat4.rotate(90,1,0,0));				//Mond drehen
+	
+	mygl.setM(gl,M);
+	
+	zeichneKreis(gl, (float) rE, 0, 0, 20);                     // Erde
+	zeichneKreis(gl, (float) (0.2*rE), (float) x, (float) y, 20);       // Mond
+	
+	
+	if (stopped) return;
+	x = x + vx*dt;
+	y = y + vy*dt;
+	
+	double r = Math.sqrt(x*x+y*y);
+	double r3 = r*r*r;
+	ax = -GM*x/r3;
+	ay = -GM*y/r3;
+	
+	vx = vx + ax*dt;
+	vy = vy + ay*dt;
+
 }
 
 
@@ -185,10 +208,18 @@ public void windowOpened(WindowEvent e) {  }
 public void keyPressed(KeyEvent e)
 { int key = e.getKeyCode();
   switch (key)
-  { case KeyEvent.VK_UP : v0y += 0.5;
+  { case 'V' : v0y += 0.5;
                           break;
-    case KeyEvent.VK_DOWN : v0y -= 0.5;
+    case 'v' : v0y -= 0.5;
                           break;
+    case KeyEvent.VK_UP : elevation++;	//#Kamerasystem bewegen
+    						break;
+    case KeyEvent.VK_DOWN : elevation--;
+    						break;
+    case KeyEvent.VK_LEFT : azimut--;	//#Kamerasystem bewegen
+	  						break;
+    case KeyEvent.VK_RIGHT : azimut++;
+	  						break;
   }
 }
 
