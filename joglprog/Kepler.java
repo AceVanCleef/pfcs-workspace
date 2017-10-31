@@ -56,6 +56,12 @@ Vec3 up = new Vec3(0,1,0);                  // up-Richtung
 float elevation = 1f;
 float azimut = 1f;
 
+
+RotKoerper erde;
+RotKoerper erdGrid;
+float phi;			//Erdrotation: Grad / Zeit
+
+
 //  ---------  Methoden  ----------------------------------
 
 public Kepler()                                   // Konstruktor
@@ -109,7 +115,6 @@ public void zeichneDreieck(GL3 gl, float x1, float y1,
 
 
 
-
 //  ----------  OpenGL-Events   ---------------------------
 
 @Override
@@ -124,6 +129,8 @@ public void init(GLAutoDrawable drawable)             //  Initialisierung
    FPSAnimator anim = new FPSAnimator(canvas, 200, true);  // Animations-Thread, 200 Frames/sek
    anim.start();
 
+   erde = new RotKoerper(mygl);
+   erdGrid = new RotKoerper(mygl);
 }
 
 
@@ -141,14 +148,26 @@ public void display(GLAutoDrawable drawable)
 	Mat4 R = R1.preMultiply(R2);
 	M = Mat4.lookAt(R.transform(A),B,R.transform(up));
 	mygl.setM(gl,M);
+	Mat4 temp = M;		//zwischen merken.
 	
 	mygl.drawAxis(gl,50,50,50);                            // Koordinatenachsen
 	
+	M = M.postMultiply(Mat4.rotate(phi, 0,1,0));
+	mygl.setM(gl,M);
+	mygl.setColor(0, 0.75f, 0);
+	erde.zeichneKugel(gl,  (float) (rE * 3.0f),  20,  20,  true);
+	mygl.setColor(1, 0, 0);
+	erde.zeichneKugel(gl,  (float) (rE * 3.01),  20,  20,  false);
+	phi++;
+	
+	M = temp;
 	M = M.postMultiply(Mat4.rotate(90,1,0,0));				//Mond drehen
 	
 	mygl.setM(gl,M);
 	
-	zeichneKreis(gl, (float) rE, 0, 0, 20);                     // Erde
+
+	//zeichneKreis(gl, (float) rE, 0, 0, 20);                     // Erde
+	mygl.setColor(1, 1, 0);
 	zeichneKreis(gl, (float) (0.2*rE), (float) x, (float) y, 20);       // Mond
 	
 	
