@@ -24,3 +24,12 @@ V: Abschussgeschwindigkeit erhöhen.
 v: Abschussgeschwindigkeit verringern.  
 s: Schuss auslösen.  
 r: In Ausgangsposition zurücksetzen.  
+
+
+## Aufgabe 03: Bumerangflug
+
+Startklasse in joglprog/uebung3_boomerang/Uebung3_Boomerang.java
+
+### Steuerung
+Pfeile links, rechts, aufwärts, abwärts:	Steuerung der Kamera.
+Leertaste:	Bumerang werfen.
