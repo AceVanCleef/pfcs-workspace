@@ -2,6 +2,8 @@ package uebung3_boomerang;
 
 import ch.fhnw.pfcs.opengl.MyTransf;
 import ch.fhnw.pfcs.opengl.MyVertexBuf;
+import ch.fhnw.util.math.Vec3;
+
 import com.jogamp.opengl.GL3;
 
 public class Boomerang {
@@ -18,16 +20,14 @@ public class Boomerang {
     private boolean move;
     private boolean rotate;
     
-    Quader component1;
-    Quader component2;
+    private int k = 0;	//to time isFullcircle
+    
+
 	
 	public Boomerang(float phi, float alpha) {
         this.phi = phi;
         this.alpha = alpha;
         this.rotation = 0;
-        
-        component1 = new Quader();
-        component2 = new Quader();
     }
 	
 	public Boomerang(float phi, float alpha, float rotation) {
@@ -45,7 +45,7 @@ public class Boomerang {
 	        transf.rotate(gl, rotation, 0, 0, 1);
 
 	        // Draw
-	        drawBoomerang(gl, vertexBuf);
+	        drawShuriken(gl, vertexBuf, transf);
 
 	        // Undo
 	        transf.rotate(gl, -rotation, 0, 0, 1);
@@ -60,63 +60,92 @@ public class Boomerang {
 	        }
 	        if (rotate) {
 	            rotation += DROT;
-	            if (rotation >= 360) rotation = rotation % 360;
+	            //System.out.println(rotation % 360);
+	            if (rotation >= 360){
+	            	rotation = rotation % 360;
+	            	++k;
+	            }
 	        }
 
 	    }
+  
+	   
 
 	   
-	   //todo: replace with own boomerang design/lookt
-	   private void drawBoomerang(GL3 gl, MyVertexBuf vertexBuf) {
-           vertexBuf.rewindBuffer(gl);
-
-           drawSurface(vertexBuf);
-           
-		   int nVertices = 7;
-		   vertexBuf.copyBuffer(gl, nVertices);
-           gl.glDrawArrays(GL3.GL_LINE_LOOP, 0, nVertices);
+	   public void drawShuriken(GL3 gl, MyVertexBuf vertexBuf, MyTransf transf) {
+		   		float width = 0.15f, height = 0.15f;
+		   		vertexBuf.setColor(0,1,0);
+		   		drawSquare(gl, vertexBuf, 0,0,0, width, height);
+		   
+		   		vertexBuf.setColor(0,0,1);
+		   		drawSquare(gl, vertexBuf, 0,0,0.001f, width, height, 45);
 	   }
 	   
-	   private void drawSurface(MyVertexBuf vertexBuf) {
-		   float x = 0.25f, y = 0.3f, z = 0;
-		   float deltaY = 0.05f;
-		   float offsetY = y * 0.5f;
-		   vertexBuf.putVertex(-x, 0, z);
-
-		   vertexBuf.putVertex(-x, 0 + deltaY - offsetY, z);
-		   vertexBuf.putVertex(0, y + deltaY - offsetY, z);
-		   vertexBuf.putVertex(x, 0 + deltaY - offsetY, z);
+	   public void drawSquare(GL3 gl, MyVertexBuf vb, 
+			   float x0, float y0, float z0,
+			   float width, float height, float phi)      {  
 		   
-		   vertexBuf.putVertex(x, 0 - offsetY, z);
-		   vertexBuf.putVertex(0, y - offsetY, z);
-		   vertexBuf.putVertex(-x, 0 - offsetY, z);
+		   	vb.rewindBuffer(gl);
+	   				   
+		   	float offsetX = width / 2, offsetY = height / 2;
 		   
+			Vec3 A = rotateVectorXY(x0 - offsetX, y0 - offsetY, z0, phi);
+			Vec3 B = rotateVectorXY(x0 - offsetX, y0 + offsetY, z0, phi);
+			Vec3 C = rotateVectorXY(x0 + offsetX, y0 + offsetY, z0, phi);
+			Vec3 D = rotateVectorXY(x0 + offsetX, y0 - offsetY, z0, phi);
+			   
+			vb.putVertex(A.x, A.y, A.z);          // Dreieck 1
+		    vb.putVertex(B.x, B.y, B.z);
+		    vb.putVertex(C.x, C.y, C.z);
+		    vb.putVertex(C.x, C.y, C.z);          // Dreieck 2
+		    vb.putVertex(D.x, D.y, D.z);
+		    vb.putVertex(A.x, A.y, A.z);
+	       
+	   		int nVertices = 6;
+			vb.copyBuffer(gl, nVertices);
+		   	gl.glDrawArrays(GL3.GL_TRIANGLE_FAN, 0, nVertices);
 	   }
 	   
-	    private void drawThrowie(GL3 gl, MyVertexBuf vertexBuf) {
-	        int n2 = N / 2;
-	        int nVertices = n2 + 1;
-	        int[][] colors = {{1, 0, 0}, {0, 1, 0}};
-	        for (int j = 0; j < 2; j++) {
-	            vertexBuf.rewindBuffer(gl);
-	            vertexBuf.setColor(colors[j][0], colors[j][1], colors[j][2]);
-	            double phi = 2 * Math.PI / N;
-	            for (int i = j * n2; i <= (j + 1) * n2; i++) {
-	                putTriangleFanVertex(vertexBuf, i, phi);
-	            }
-	            putTriangleFanVertex(vertexBuf, j * n2, phi);
-	            vertexBuf.copyBuffer(gl, nVertices);
-	            gl.glDrawArrays(GL3.GL_TRIANGLE_FAN, 0, nVertices);
-	        }
-	    }	
-	private void putTriangleFanVertex(MyVertexBuf vertexBuf, int i, double phi) {
-        vertexBuf.putVertex((float) (RADIUS * Math.cos(i * phi)),
-                (float) (RADIUS * Math.sin(i * phi)), 0);
-    }
+	   private static Vec3 rotateVectorXY(float x, float y, float z ,float phi) {
+		   return new Vec3(x * Math.cos(phi) - y * Math.sin(phi),
+				   x * Math.sin(phi) + y * Math.cos(phi), z);
+	   }
+	   
+	   private void drawSquare(GL3 gl, MyVertexBuf vb, 
+			   float x0, float y0, float z0,
+			   float width, float height)      {  
+	   		vb.rewindBuffer(gl);
+		   
+		   	// Mittelpunkt (of square) M = (x0,y0,z0)
+		   	float offsetX = width / 2, offsetY = height / 2;
+		    //vb.setNormal(n.x, n.y, n.z);
+		   	// Dreieck 1
+			vb.putVertex(x0 - offsetX, y0 - offsetY, z0);          	//P1
+			vb.putVertex(x0 - offsetX, y0 + offsetY, z0);			//P2
+			vb.putVertex(x0 + offsetX, y0 + offsetY, z0);			//P3
+			// Dreieck 2
+			vb.putVertex(x0 + offsetX, y0 + offsetY, z0);			//P3
+			vb.putVertex(x0 + offsetX, y0 - offsetY, z0);			//P4
+			vb.putVertex(x0 - offsetX, y0 - offsetY, z0);			//P1
+			
+	   		int nVertices = 6;
+	   		vb.copyBuffer(gl, nVertices);
+	   		gl.glDrawArrays(GL3.GL_TRIANGLE_FAN, 0, nVertices);
+	   }
+	   
 
-    public void setAlpha(float alpha) {
-        this.alpha = alpha;
-    }
+//	   public void launch(){
+//		   rotation = 0;
+//	   }
 	
+    public boolean traveledFullCircle(){
+    	if (k >= 36){
+    		k = 0;
+    		return true;
+    	}
+    	return false;
+    }
+    
+    
 	
 }

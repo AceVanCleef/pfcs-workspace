@@ -6,6 +6,8 @@ import ch.fhnw.pfcs.std.GLKeyListener;
 import ch.fhnw.pfcs.std.GLWindowListener;
 import ch.fhnw.pfcs.std.viewing.PerspectiveProjection;
 import ch.fhnw.pfcs.std.viewing.ViewingVolume;
+import ch.fhnw.util.math.Vec3;
+
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
@@ -32,28 +34,35 @@ public class Uebung3_Boomerang extends GLApp {
     private boolean move;
     private boolean rotate;
     
+    private boolean isFlying;
+    
     private Boomerang boomerang;
-    private final LinkedList<Boomerang> boomerangs;
 
+    private Thrower throwPos0;	//Person who throws the boomerang
     
     public Uebung3_Boomerang(){
     	 this.phi = 0;
          this.alpha = -20;
          this.move = false;
          this.rotate = false;
-         this.boomerangs = new LinkedList<>();
-         for (int i = 0; i < N; i++) {
-        	 boomerangs.add(new Boomerang(360 / N * i, alpha, 360 / N * i));
-         }         
+         this.isFlying = false;
+         
+         boomerang = new Boomerang(0, alpha, 0);
+      
+         throwPos0 = new Thrower(0, alpha);
+         
          this.keyListener = new GLKeyListener() {
 
              @Override
              public void update() {
-                 if (isSpaceDownOnce()) move = !move;
-                 if (isRDownOnce()) rotate = !rotate;
-
-                 if (isWDown()) alpha++;
-                 if (isSDown()) alpha--;
+                 if (isSpaceDownOnce() && !isFlying) {
+                	 move = true;
+                	 rotate = true;
+                	 isFlying = true;
+//                	 boomerang.launch();
+                 }
+                 //if (isRDownOnce()) rotate = !rotate;
+                 
                  if (isADown()) phi--;
                  if (isDDown()) phi++;
 
@@ -105,12 +114,50 @@ public class Uebung3_Boomerang extends GLApp {
         transf.translate(gl, 0, 0.2f, 0);
         transf.rotate(gl, phi, 0, 1, 0);
 
-        for (Boomerang t : boomerangs) {
-            t.setAlpha(alpha);
-            t.draw(gl, vertexBuf, transf, move, rotate);
-        }
+        boomerang.draw(gl, vertexBuf, transf, move, rotate);
+
+        //starting point
+        throwPos0.draw(gl, vertexBuf, transf, rotate);
+        
+        //draw plane
+        transf.rotate(gl, 90, 1, 0, 0);
+        transf.translate(gl, 0, 0, 0.25f);
+        vertexBuf.setColor(0.33f, 0.33f, 0.33f);
+        drawSquare(gl, vertexBuf, 0,0,0, 5.0f, 5.0f);
+        transf.translate(gl, 0, 0, -0.25f);
+        transf.rotate(gl, -90, 1, 0, 0);
 
         keyListener.update();
+        
+        if(boomerang.traveledFullCircle()) {
+        	move = false;
+       	 	rotate = false;
+       	 	isFlying = false;
+        }
     }
 
+    
+    private void drawSquare(GL3 gl, MyVertexBuf vb, 
+			   float x0, float y0, float z0,
+			   float width, float height)      {  
+	   		vb.rewindBuffer(gl);
+		   
+		   	// Mittelpunkt (of square) M = (x0,y0,z0)
+		   	float offsetX = width / 2, offsetY = height / 2;
+		    //vb.setNormal(n.x, n.y, n.z);
+		   	// Dreieck 1
+			vb.putVertex(x0 - offsetX, y0 - offsetY, z0);          	//P1
+			vb.putVertex(x0 - offsetX, y0 + offsetY, z0);			//P2
+			vb.putVertex(x0 + offsetX, y0 + offsetY, z0);			//P3
+			// Dreieck 2
+			vb.putVertex(x0 + offsetX, y0 + offsetY, z0);			//P3
+			vb.putVertex(x0 + offsetX, y0 - offsetY, z0);			//P4
+			vb.putVertex(x0 - offsetX, y0 - offsetY, z0);			//P1
+			
+	   		int nVertices = 6;
+	   		vb.copyBuffer(gl, nVertices);
+	   		gl.glDrawArrays(GL3.GL_TRIANGLE_FAN, 0, nVertices);
+	   }
+    
+	  
 }
