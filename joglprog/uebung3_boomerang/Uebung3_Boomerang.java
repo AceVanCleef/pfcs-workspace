@@ -22,7 +22,6 @@ public class Uebung3_Boomerang extends GLApp {
     }
 	
     private final static int FPS = 60;      // Frames per second
-    private final static int N = 1;
 
     private float radiusCam = 2, elevation = 15, azimuth = 45;
 
@@ -59,12 +58,8 @@ public class Uebung3_Boomerang extends GLApp {
                 	 move = true;
                 	 rotate = true;
                 	 isFlying = true;
-//                	 boomerang.launch();
                  }
-                 //if (isRDownOnce()) rotate = !rotate;
                  
-                 if (isADown()) phi--;
-                 if (isDDown()) phi++;
 
                  if (isUpDown()) elevation++;
                  if (isDownDown()) elevation--;

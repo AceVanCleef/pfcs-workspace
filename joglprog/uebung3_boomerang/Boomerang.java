@@ -133,10 +133,6 @@ public class Boomerang {
 	   		gl.glDrawArrays(GL3.GL_TRIANGLE_FAN, 0, nVertices);
 	   }
 	   
-
-//	   public void launch(){
-//		   rotation = 0;
-//	   }
 	
     public boolean traveledFullCircle(){
     	if (k >= 36){
