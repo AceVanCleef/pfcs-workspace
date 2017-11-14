@@ -6,14 +6,11 @@ import ch.fhnw.pfcs.std.GLKeyListener;
 import ch.fhnw.pfcs.std.GLWindowListener;
 import ch.fhnw.pfcs.std.viewing.PerspectiveProjection;
 import ch.fhnw.pfcs.std.viewing.ViewingVolume;
-import ch.fhnw.util.math.Vec3;
-
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import java.awt.*;
-import java.util.LinkedList;
 
 public class Uebung3_Boomerang extends GLApp {
 	

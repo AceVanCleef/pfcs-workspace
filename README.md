@@ -31,5 +31,5 @@ r: In Ausgangsposition zurücksetzen.
 Startklasse in joglprog/uebung3_boomerang/Uebung3_Boomerang.java
 
 ### Steuerung
-Pfeile links, rechts, aufwärts, abwärts:	Steuerung der Kamera.
+Pfeile links, rechts, aufwärts, abwärts:	Steuerung der Kamera.  
 Leertaste:	Bumerang werfen.
