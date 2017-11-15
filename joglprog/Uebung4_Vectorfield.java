@@ -20,7 +20,7 @@ public class Uebung4_Vectorfield
     int windowHeight = 600;
     String vShader = MyShaders.vShader1;                 // Vertex-Shader mit Transformations-Matrizen
     String fShader = MyShaders.fShader0;                 // Fragment-Shader
-    int maxVerts = 10048;                                 // max. Anzahl Vertices im Vertex-Array
+    int maxVerts = 2 * 10048;                                 // max. Anzahl Vertices im Vertex-Array
     GLCanvas canvas;                                     // OpenGL Window
     MyGLBase1 mygl;                                      // OpenGL Basis-Funktionen
 
@@ -32,7 +32,7 @@ public class Uebung4_Vectorfield
     Mat4 P;                                            // Projektions-Matrix
     
     //Kreis
-    float radius = 5.0f;
+    float radius = 15.0f;
     
 
     LorenzDynamics lorenzdynamics;
@@ -109,6 +109,8 @@ public class Uebung4_Vectorfield
 			//Tipp: Mitstudent: Ausgangspunkt der Bahn in linken Feldbereich setzen
 			
 			
+			//Math.abs(Math.cos(x + Phi - dt))
+			
 			for (int i=0; i < 50; i++)
 			{ 
 				x = rungeKutta(x, dt);
@@ -116,8 +118,11 @@ public class Uebung4_Vectorfield
 			for (int i=0; i < nSchritte; i++)
 			{ 
 				x = rungeKutta(x, dt);
+				//todo: only every n-th vertice.
 				mygl.putVertex((float)x[0],(float)x[1],(float)x[2]);
-
+				
+				//mygl.putVertex((float) (x[0] * drawEveryNthVertice(x[0], i)),(float)x[1],(float)x[2]);
+				System.out.println(drawEveryNthVertice(x[0], i));
 			}
 			
 			
@@ -126,6 +131,9 @@ public class Uebung4_Vectorfield
 		}
     }
     
+    private float drawEveryNthVertice(double x, double dt) {
+    	return (float) Math.abs(Math.cos(x + Math.PI - dt));
+    }
 
 
     
@@ -231,8 +239,17 @@ public class Uebung4_Vectorfield
       //zeichneBahn(gl,-20,-20,0,0,1,0,0.0005f,500);              // Spirale
       
       //LorenzDynamics
-      lorenzdynamics.zeichneBahn(mygl, gl, -50, 10, 10, 0.01f, 9000);
+      //lorenzdynamics.zeichneBahn(mygl, gl, -80, 10, 10, 0.01f, 15000);
       	//für mehrere Linien: Schlaufe mit zeichneBahn.
+      
+      for (int i = -50; i < 50; i += 5) {
+          lorenzdynamics.zeichneBahn(mygl, gl, -80, i + 2.5f, 10, 0.01f, 18000);
+      }
+      
+      /*
+       * zeichneBahn(MyGLBase1 mygl, GL3 gl, 
+				double xStart, double yStart, double zStart,
+				double dt, double nSchritte) */
       
       //Kreis
       mygl.setColor(0.2f, 0.2f, 0.2f);
