@@ -33,3 +33,8 @@ Startklasse in joglprog/uebung3_boomerang/Uebung3_Boomerang.java
 ### Steuerung
 Pfeile links, rechts, aufwärts, abwärts:	Steuerung der Kamera.  
 Leertaste:	Bumerang werfen.
+
+
+## Aufgabe 04: Vektorfeld
+
+Startklasse in [/joglprog/Uebung4_Vectorfield.java](https://github.com/AceVanCleef/pfcs-workspace/blob/master/joglprog/Uebung4_Vectorfield.java)
