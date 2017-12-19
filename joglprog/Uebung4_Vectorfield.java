@@ -131,6 +131,10 @@ public class Uebung4_Vectorfield
 		}
     }
     
+    //Tipp: Array "double[] Kugeln = new Double[2] -> koordinaten von kugeln/kreisen.
+    //		getPosition() (für Kugeln): wendet rungeKutta an (für einzelnen Kreis/Punkt)
+    //		zeichneKreis() verwenden.
+    
     private float drawEveryNthVertice(double x, double dt) {
     	return (float) Math.abs(Math.cos(x + Math.PI - dt));
     }
