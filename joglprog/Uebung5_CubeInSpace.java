@@ -48,6 +48,7 @@ public class Uebung5_CubeInSpace
     
     //key controls
     private boolean pause = false;
+    Vec3 rgb;
 
     //  -------- Viewing-Volume  ---------------
     float left=-4f, right=4f;
@@ -102,6 +103,8 @@ public class Uebung5_CubeInSpace
        gyro = new GyroDynamics(quad);
        gyro.initState(0.001f, 0.00001f, 0.00005f, 10, 1.0f, 0.0f, 0.0f);
        
+       rgb = new Vec3(0, 0.75f, 0);
+       
        //#Kamerasystem
        FPSAnimator anim = new FPSAnimator(canvas, 200, true);
        anim.start();
@@ -137,17 +140,18 @@ public class Uebung5_CubeInSpace
     	double[] state = gyro.getState();
     	
       //#Rotationsquader
-      mygl.setColor(0,0.75f,0);
-      if (!pause) {
+      mygl.setColor(rgb.x, rgb.y, rgb.z);
+	      
     	  M = M.postMultiply(Mat4.translate((float) x, (float) 0, (float) 0));
     	  mygl.setM(gl, M);
-    	  x += dx;
-    	  if (x > 4 || x < -4) dx *= -1;
-      }
+    	  if (!pause) {
+	    	  x += dx;
+	    	  if (x > 4 || x < -4) dx *= -1;
+	      }
     
-	    	 gyro.move(t);
-	    	 t += dt; 
-    
+	      gyro.move(t);
+	      t += dt; 
+	
 	      M = M.postMultiply(Mat4.rotate((float) state[3],(float) state[4],(float) state[5],(float) state[6]));
 	      mygl.setM(gl, M);
       quad.draw(gl);;
@@ -232,23 +236,28 @@ public class Uebung5_CubeInSpace
       	case '1':	//Würfel
       		//float m, float a, float b, float c
       		quad = new QuaderV3(mygl, quad.getM(), 1, 1, 1);
-      		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
+      		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());
+      		rgb = new Vec3(0.75f, 0, 0);
       		break;
       	case '2':
 	      	quad = new QuaderV3(mygl, quad.getM(), 3, 1, 1);
-	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
+	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());
+	  		rgb = new Vec3(0.75f, 0.75f, 0);
 	  		break;
       	case '3':	
-      		quad = new QuaderV3(mygl, quad.getM(), 1, 3, 1);
-	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
+      		quad = new QuaderV3(mygl, quad.getM(), 0.75f, 0.5f, 1.5f);
+	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());
+	  		rgb = new Vec3(0, 0, 0.75f);
 	  		break;
       	case '4':
       		quad = new QuaderV3(mygl, quad.getM(), 0.75f, 2, 3);
-	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
+	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());
+	  		rgb = new Vec3(0, 0.75f, 0.75f);
 	  		break;
       	case '5':	//initial shape
       		quad = new QuaderV3(mygl, quad.getM(), 3, 2, 4);
-	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
+	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());
+	  		rgb = new Vec3(0, 0.75f, 0);
 	  		break;
       }
 
