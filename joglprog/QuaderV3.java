@@ -1,10 +1,10 @@
-package ch.fhnw.pfcs.opengl;//  -------------   ch.fhnw.pfcs.opengl.Quader mit Randlinien ------------
-//                                                            E.Gutknecht, Juli 2015
+
 
 import com.jogamp.opengl.*;
 
 import ch.fhnw.util.math.Vec3;
 import com.jogamp.opengl.GL3;
+import ch.fhnw.pfcs.opengl.*;
 
 public class QuaderV3 {
     //  ----------------  globale Daten  -------------------------
@@ -98,7 +98,7 @@ public class QuaderV3 {
             Viereck(gl, D, H, G, C, e1n);
             Viereck(gl, A, E, H, D, e3);
             nVertices = 36;
-            vb.copyBuffer(gl, nVertices);
+            vb.copyBuffer(gl);
             gl.glDrawArrays(GL3.GL_TRIANGLES, 0, nVertices);
         } else {
             kante(A, B);                         // Boden
@@ -114,7 +114,7 @@ public class QuaderV3 {
             kante(C, G);
             kante(D, H);
             nVertices = 24;
-            vb.copyBuffer(gl, nVertices);
+            vb.copyBuffer(gl);
             gl.glDrawArrays(GL3.GL_LINES, 0, nVertices);
         }
     }

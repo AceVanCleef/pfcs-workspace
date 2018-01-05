@@ -5,7 +5,6 @@ import java.util.Stack;
 
 import com.jogamp.opengl.*;
 
-import ch.fhnw.pfcs.opengl.QuaderV3;
 import ch.fhnw.util.math.*;
 import com.jogamp.opengl.awt.*;
 import com.jogamp.opengl.util.FPSAnimator;
@@ -95,10 +94,10 @@ public class Uebung5_CubeInSpace
        gl.glClearColor(0,0,0,1);
        int programId = MyShaders.initShaders(gl,vShader,fShader);
        mygl = new MyGLBase1(gl, programId, maxVerts);
-       quad = new QuaderV3(mygl, 2.0f, 3.0f, 4.0f, 5.0f);
+       quad = new QuaderV3(mygl,50f, 3f, 2f, 4f);
        
        gyro = new GyroDynamics(quad);
-       gyro.initState(1.0f, 1.0f, 2.0f, 120, 5.0f, 1.0f, 1.0f);
+       gyro.initState(0.001f, 0.0f, 0.0f, 30, 1.0f, 0.0f, 0.0f);
        
        //#Kamerasystem
        FPSAnimator anim = new FPSAnimator(canvas, 200, true);
@@ -136,15 +135,15 @@ public class Uebung5_CubeInSpace
     	
       //#Rotationsquader
       mygl.setColor(0,0.75f,0);
-      M = M.postMultiply(Mat4.translate((float) state[4], (float) state[5], (float) state[6]));
-      mygl.setM(gl, M);      
+      //M = M.postMultiply(Mat4.translate((float) state[4], (float) state[5], (float) state[6]));
+     // mygl.setM(gl, M);      
       
 	      
 	      gyro.move(t);
 	      t += dt;
-	      M = M.postMultiply(Mat4.rotate((float) state[1],(float) state[4],(float) state[5],(float) state[6]));
+	      M = M.postMultiply(Mat4.rotate((float) state[3],(float) state[4],(float) state[5],(float) state[6]));
 	      mygl.setM(gl, M);
-      quad.draw(gl, vertexBuf);;
+      quad.draw(gl);;
      // x += dx;
       
      // gyro.setState(w1, w2, w3, phi, dx, y, z);
