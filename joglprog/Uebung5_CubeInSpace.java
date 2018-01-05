@@ -100,7 +100,7 @@ public class Uebung5_CubeInSpace
        quad = new QuaderV3(mygl,50f, 3f, 2f, 4f);
        
        gyro = new GyroDynamics(quad);
-       gyro.initState(0.001f, 0.0f, 0.0f, 10, 1.0f, 0.0f, 0.0f);
+       gyro.initState(0.001f, 0.00001f, 0.00005f, 10, 1.0f, 0.0f, 0.0f);
        
        //#Kamerasystem
        FPSAnimator anim = new FPSAnimator(canvas, 200, true);
@@ -138,13 +138,16 @@ public class Uebung5_CubeInSpace
     	
       //#Rotationsquader
       mygl.setColor(0,0.75f,0);
-      //M = M.postMultiply(Mat4.translate((float) state[4], (float) state[5], (float) state[6]));
-     // mygl.setM(gl, M);      
-      
-	      if (!pause) {
+      if (!pause) {
+    	  M = M.postMultiply(Mat4.translate((float) x, (float) 0, (float) 0));
+    	  mygl.setM(gl, M);
+    	  x += dx;
+    	  if (x > 4 || x < -4) dx *= -1;
+      }
+    
 	    	 gyro.move(t);
-	      t += dt; 
-	      }     
+	    	 t += dt; 
+    
 	      M = M.postMultiply(Mat4.rotate((float) state[3],(float) state[4],(float) state[5],(float) state[6]));
 	      mygl.setM(gl, M);
       quad.draw(gl);;
@@ -222,6 +225,7 @@ public class Uebung5_CubeInSpace
 
     public void keyTyped(KeyEvent e)
     { char code = e.getKeyChar(); 
+    	double[] state;
       switch (code)
       {
       	case 's':	pause = !pause; break;
@@ -242,7 +246,7 @@ public class Uebung5_CubeInSpace
       		quad = new QuaderV3(mygl, quad.getM(), 0.75f, 2, 3);
 	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
 	  		break;
-      	case '5':
+      	case '5':	//initial shape
       		quad = new QuaderV3(mygl, quad.getM(), 3, 2, 4);
 	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
 	  		break;
