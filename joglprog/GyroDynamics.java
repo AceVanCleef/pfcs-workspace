@@ -76,4 +76,11 @@ public class GyroDynamics
   public void move(double dt)
   {  x=rungeKutta(x,dt);
   }
+  
+  public void setGyroDynamics(float m, float a, float b, float c){
+	   I1 = 1.0f/12.0f * m * (b*b + c*c);
+	   I2 = 1.0f/12.0f * m * (a*a + c*c);
+	   I3 = 1.0f/12.0f * m * (a*a + b*b);
+	   //see script p.73
+  }
 }

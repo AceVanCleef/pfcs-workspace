@@ -1,5 +1,6 @@
 //  -------------   JOGL 3D-Programm  -------------------
 import java.awt.*;
+import java.awt.RenderingHints.Key;
 import java.awt.event.*;
 import java.util.Stack;
 
@@ -45,6 +46,8 @@ public class Uebung5_CubeInSpace
     float elevation = 1f;
     float azimut = 1f;
     
+    //key controls
+    private boolean pause = false;
 
     //  -------- Viewing-Volume  ---------------
     float left=-4f, right=4f;
@@ -97,7 +100,7 @@ public class Uebung5_CubeInSpace
        quad = new QuaderV3(mygl,50f, 3f, 2f, 4f);
        
        gyro = new GyroDynamics(quad);
-       gyro.initState(0.001f, 0.0f, 0.0f, 30, 1.0f, 0.0f, 0.0f);
+       gyro.initState(0.001f, 0.0f, 0.0f, 10, 1.0f, 0.0f, 0.0f);
        
        //#Kamerasystem
        FPSAnimator anim = new FPSAnimator(canvas, 200, true);
@@ -138,9 +141,10 @@ public class Uebung5_CubeInSpace
       //M = M.postMultiply(Mat4.translate((float) state[4], (float) state[5], (float) state[6]));
      // mygl.setM(gl, M);      
       
-	      
-	      gyro.move(t);
-	      t += dt;
+	      if (!pause) {
+	    	 gyro.move(t);
+	      t += dt; 
+	      }     
 	      M = M.postMultiply(Mat4.rotate((float) state[3],(float) state[4],(float) state[5],(float) state[6]));
 	      mygl.setM(gl, M);
       quad.draw(gl);;
@@ -202,7 +206,8 @@ public class Uebung5_CubeInSpace
     public void keyPressed(KeyEvent e)
     { int key = e.getKeyCode();
       switch (key)
-      { case KeyEvent.VK_UP : elevation++;	//#Kamerasystem bewegen
+      { 
+      	case KeyEvent.VK_UP : elevation++;	//#Kamerasystem bewegen
                               break;
         case KeyEvent.VK_DOWN : elevation--;
                               break;
@@ -216,10 +221,33 @@ public class Uebung5_CubeInSpace
     public void keyReleased(KeyEvent e) { }
 
     public void keyTyped(KeyEvent e)
-    { char code = e.getKeyChar();
-      if (code == 's')
-        //stopped = !stopped;
-    	  System.out.println("hello");
+    { char code = e.getKeyChar(); 
+      switch (code)
+      {
+      	case 's':	pause = !pause; break;
+      	case '1':	//Würfel
+      		//float m, float a, float b, float c
+      		quad = new QuaderV3(mygl, quad.getM(), 1, 1, 1);
+      		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
+      		break;
+      	case '2':
+	      	quad = new QuaderV3(mygl, quad.getM(), 3, 1, 1);
+	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
+	  		break;
+      	case '3':	
+      		quad = new QuaderV3(mygl, quad.getM(), 1, 3, 1);
+	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
+	  		break;
+      	case '4':
+      		quad = new QuaderV3(mygl, quad.getM(), 0.75f, 2, 3);
+	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
+	  		break;
+      	case '5':
+      		quad = new QuaderV3(mygl, quad.getM(), 3, 2, 4);
+	  		gyro.setGyroDynamics(quad.getM(), quad.getA(), quad.getB(), quad.getC());;
+	  		break;
+      }
+
     }
 
 }
