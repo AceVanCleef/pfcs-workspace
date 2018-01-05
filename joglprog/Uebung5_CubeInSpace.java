@@ -4,11 +4,13 @@ import java.awt.event.*;
 import java.util.Stack;
 
 import com.jogamp.opengl.*;
+
+import ch.fhnw.pfcs.opengl.QuaderV3;
 import ch.fhnw.util.math.*;
 import com.jogamp.opengl.awt.*;
 import com.jogamp.opengl.util.FPSAnimator;
 
-public class SlerpTest
+public class Uebung5_CubeInSpace
        implements WindowListener, GLEventListener, KeyListener
 {
 
@@ -28,12 +30,14 @@ public class SlerpTest
     Stack<Mat4> matrixStack = new Stack<>();
     
     //#Rotationsquader
-    Quader quad ;	//#Rotationsquader
+    QuaderV3 quad ;	//#Rotationsquader
     double x = -4f, dx = 0.01;	//Position bzw Bewegungsrichtung #Rotationsquader
     //Rotation #Rotationsquader
     Quaternion qStart = Quaternion.fromAxis(new Vec3(1,0,0), 10);
     Quaternion qEnd = Quaternion.fromAxis(new Vec3(0,1,0), 30);
     double t=0, dt = 0.1;	//SLERP - Parameter
+    
+    GyroDynamics gyro;
 
     Mat4 M;                                            // ModelView-Matrix
     Mat4 P;                                            // Projektions-Matrix
@@ -55,7 +59,7 @@ public class SlerpTest
 
     //  ---------  Methoden  ----------------------------------
 
-    public SlerpTest()                          // Konstruktor
+    public Uebung5_CubeInSpace()                          // Konstruktor
     { createFrame();
     }
 
@@ -91,7 +95,10 @@ public class SlerpTest
        gl.glClearColor(0,0,0,1);
        int programId = MyShaders.initShaders(gl,vShader,fShader);
        mygl = new MyGLBase1(gl, programId, maxVerts);
-       quad = new Quader(mygl);
+       quad = new QuaderV3(mygl, 2.0f, 3.0f, 4.0f, 5.0f);
+       
+       gyro = new GyroDynamics(quad);
+       gyro.initState(1.0f, 1.0f, 2.0f, 120, 5.0f, 1.0f, 1.0f);
        
        //#Kamerasystem
        FPSAnimator anim = new FPSAnimator(canvas, 200, true);
@@ -124,21 +131,23 @@ public class SlerpTest
       mygl.setShadingParam(gl, 0.5f, 0.8f);	//gl, ambient light, diffuse light (direkt beleuchtet)
       mygl.setShadingLevel(gl, 1);
       
-      
+    //GyroDynamics
+    	double[] state = gyro.getState();
+    	
       //#Rotationsquader
       mygl.setColor(0,0.75f,0);
-      M = M.postMultiply(Mat4.translate((float) x, 0, 0));
+      M = M.postMultiply(Mat4.translate((float) state[4], (float) state[5], (float) state[6]));
       mygl.setM(gl, M);      
       
-	      // SLERP
-	      Quaternion qInterpolated = qStart.slerp(qEnd,(float) t);
+	      
+	      gyro.move(t);
 	      t += dt;
-	      //if (t > 1.0) t = 0.0;
-	      Vec4 rotation = qInterpolated.getAxisAngle();
-	      M = M.postMultiply(Mat4.rotate(rotation.w, rotation.x, rotation.y, rotation.z));
+	      M = M.postMultiply(Mat4.rotate((float) state[1],(float) state[4],(float) state[5],(float) state[6]));
 	      mygl.setM(gl, M);
-      quad.zeichne(gl, 3.0f, 2.0f, 1.5f, true);
-      x += dx;
+      quad.draw(gl, vertexBuf);;
+     // x += dx;
+      
+     // gyro.setState(w1, w2, w3, phi, dx, y, z);
       
       matrixStack.push(M);	//M sich merken.
       
@@ -174,7 +183,7 @@ public class SlerpTest
     //  -----------  main-Methode  ---------------------------
 
     public static void main(String[] args)
-    { new SlerpTest();
+    { new Uebung5_CubeInSpace();
     }
 
 

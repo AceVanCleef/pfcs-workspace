@@ -1,12 +1,14 @@
 package ch.fhnw.pfcs.opengl;//  -------------   ch.fhnw.pfcs.opengl.Quader mit Randlinien ------------
 //                                                            E.Gutknecht, Juli 2015
 
+import com.jogamp.opengl.*;
+
 import ch.fhnw.util.math.Vec3;
 import com.jogamp.opengl.GL3;
 
-public class Quader {
+public class QuaderV3 {
     //  ----------------  globale Daten  -------------------------
-    MyVertexBuf vb;
+	MyGLBase1 vb;
 
     Vec3 e1 = new Vec3(1, 0, 0);               // Normalenvektoren
     Vec3 e2 = new Vec3(0, 1, 0);
@@ -14,14 +16,45 @@ public class Quader {
     Vec3 e1n = new Vec3(-1, 0, 0);             // negative Richtung
     Vec3 e2n = new Vec3(0, -1, 0);
     Vec3 e3n = new Vec3(0, 0, -1);
-
+    
+    private float m;
+    private float a, b, c;
 
     //  ---------------------  Methoden  --------------------------
 
-    public Quader(MyVertexBuf vb) {
+
+    public QuaderV3(MyGLBase1 vb, float m, float a, float b, float c) {
+    	this(vb);
+        this.m = m;
+        this.a = a;
+        this.b = b;
+        this.c = c;
+    }
+
+    public void draw(GL3 gl) {
+        this.zeichne(gl, a, b, c, true);
+    }
+    
+
+    public QuaderV3(MyGLBase1 vb) {
         this.vb = vb;
     }
 
+    public float getM() {
+        return m;
+    }
+
+    public float getA() {
+        return a;
+    }
+
+    public float getB() {
+        return b;
+    }
+
+    public float getC() {
+        return c;
+    }
     
     public void Viereck(GL3 gl, Vec3 A, Vec3 B, Vec3 C, Vec3 D,
                         Vec3 n)      // Normale
