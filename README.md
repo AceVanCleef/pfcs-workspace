@@ -38,3 +38,13 @@ Leertaste:	Bumerang werfen.
 ## Aufgabe 04: Vektorfeld
 
 Startklasse in [/joglprog/Uebung4_Vectorfield.java](https://github.com/AceVanCleef/pfcs-workspace/blob/master/joglprog/Uebung4_Vectorfield.java)
+
+
+## Aufgabe 05: Cube in Space  
+
+Starkklasse in [/joglprog/Uebung4_Vectorfield.java](https://github.com/AceVanCleef/pfcs-workspace/blob/master/joglprog/Uebung4_Vectorfield.java)  
+
+### Steuerung
+s:	Links zu rechts - Bewegung pausieren.  
+1,2,3,4,5: Auswahl unterschiedlicher Würfel/Quader.  
+Pfeile links, rechts, aufwärts, abwärts:	Steuerung der Kamera.  
