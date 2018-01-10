@@ -42,7 +42,7 @@ Startklasse in [/joglprog/Uebung4_Vectorfield.java](https://github.com/AceVanCle
 
 ## Aufgabe 05: Cube in Space  
 
-Starkklasse in [/joglprog/Uebung4_Vectorfield.java](https://github.com/AceVanCleef/pfcs-workspace/blob/master/joglprog/Uebung4_Vectorfield.java)  
+Starkklasse in [/joglprog/Uebung5_CubeInSpace.java](https://github.com/AceVanCleef/pfcs-workspace/blob/master/joglprog/Uebung5_CubeInSpace.java)  
 
 ### Steuerung
 s:	Links zu rechts - Bewegung pausieren.  
